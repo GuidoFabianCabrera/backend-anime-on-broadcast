@@ -13,11 +13,18 @@ export class AnimesService {
   ) {}
 
   async updateAnimeOnBroadcast(): Promise<Anime[]> {
+    console.log('s/animeOnBroadcast')
     const response: AnimeModule[] = await animeOnBroadcast();
-    
+    console.log('f/animeOnBroadcast')
+
+    if (!response) return null
+
+    console.log('s/delete database')
     await this.animeModel.deleteMany({});
     await this.cloudinary.removeAllFolderFromCloudinary('anime');
+    console.log('f/delete database')
 
+    console.log('s/map animeOnBroadcast')
     const cloneList: any = response.forEach(async (item: any) => {
       const animeWithImage = await this.cloudinary.uploadToCloudinary(item.image, 'anime');
 
@@ -35,6 +42,7 @@ export class AnimesService {
 
       return await anime.save();
     });
+    console.log('f/map animeOnBroadcast')
 
     return cloneList;
   }
